@@ -1,8 +1,14 @@
 import pygame
+from constants import *
+
+pygame.font.init()
+def draw_text(text, font, font_color, position, screen):
+    img = font.render(text, True, font_color)
+    screen.blit(img, position)
 
 #each individual square to compose the game grid and contains the number
 class UnitSquare(pygame.sprite.Sprite):
-    def __init__(self, x, y, side, valor = None):
+    def __init__(self, x, y, side, valor = None, true_valor = None):
         if hasattr(self, "containers"):
             super().__init__(self.containers)
         else:
@@ -12,109 +18,30 @@ class UnitSquare(pygame.sprite.Sprite):
         self.side = side
         self.valor = valor
         self.pencil = set()
+        self.true_valor = true_valor
 
     
     def draw(self, screen):
-        return pygame.draw.rect(screen, "white", [self.position_x, self.position_y, self.side, self.side], 2)
+        pygame.draw.rect(screen, "black", [self.position_x, self.position_y, self.side, self.side], INNER_THICK)
+        pos = (self.position_x + self.side/3, self.position_y + self.side/4)
+        if self.true_valor is not None:
+            draw_text(f"{self.true_valor}", pygame.font.SysFont("Arial", PEN_HEIGHT), "black", pos, screen)
+        elif self.valor is not None:
+            draw_text(f"{self.valor}", pygame.font.SysFont("Arial", PEN_HEIGHT), "blue", pos, screen)
+        else:
+            x1 = self.position_x + PENCIL_MARGIN
+            y1 = self.position_y + PENCIL_MARGIN
+            for n in sorted(self.pencil):
+                draw_text(f"{n}", pygame.font.SysFont("Arial", PENCIL_HEIGTH), "black", (x1, y1), screen)
+                x1 += PENCIL_MARGIN
+
     
     def move(self, np):
     #create a move function for the 'nonlinear' modes
         pass
 
-    def update_pen(self, dt):
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_1]:
-            if self.valor == 1:
-                self.valor = None
-            else:
-                self.valor = 1
-        if keys[pygame.K_2]:
-            if self.valor == 2:
-                self.valor = None
-            else:
-                self.valor = 2
-        if keys[pygame.K_3]:
-            if self.valor == 3:
-                self.valor = None
-            else:
-                self.valor = 3
-        if keys[pygame.K_4]:
-            if self.valor == 4:
-                self.valor = None
-            else:
-                self.valor = 4
-        if keys[pygame.K_5]:
-            if self.valor == 5:
-                self.valor = None
-            else:
-                self.valor = 5
-        if keys[pygame.K_6]:
-            if self.valor == 6:
-                self.valor = None
-            else:
-                self.valor = 6
-        if keys[pygame.K_7]:
-            if self.valor == 7:
-                self.valor = None
-            else:
-                self.valor = 7
-        if keys[pygame.K_8]:
-            if self.valor == 8:
-                self.valor = None
-            else:
-                self.valor = 8
-        if keys[pygame.K_9]:
-            if self.valor == 9:
-                self.valor = None
-            else:
-                self.valor = 9
-
-    def update_pencil(self):
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_1]:
-            if 1 in self.pencil:
-                self.pencil.remove(1)
-            else:
-                self.pencil.add(1)
-        if keys[pygame.K_2]:
-            if 1 in self.pencil:
-                self.pencil.remove(2)
-            else:
-                self.pencil.add(2)
-        if keys[pygame.K_3]:
-            if 1 in self.pencil:
-                self.pencil.remove(3)
-            else:
-                self.pencil.add(3)
-        if keys[pygame.K_4]:
-            if 1 in self.pencil:
-                self.pencil.remove(4)
-            else:
-                self.pencil.add(4)
-        if keys[pygame.K_5]:
-            if 1 in self.pencil:
-                self.pencil.remove(5)
-            else:
-                self.pencil.add(5)
-        if keys[pygame.K_6]:
-            if 1 in self.pencil:
-                self.pencil.remove(6)
-            else:
-                self.pencil.add(6)
-        if keys[pygame.K_7]:
-            if 1 in self.pencil:
-                self.pencil.remove(7)
-            else:
-                self.pencil.add(7)
-        if keys[pygame.K_8]:
-            if 1 in self.pencil:
-                self.pencil.remove(8)
-            else:
-                self.pencil.add(8)
-        if keys[pygame.K_9]:
-            if 1 in self.pencil:
-                self.pencil.remove(9)
-            else:
-                self.pencil.add(9)
+    def inside_the_square(self, x, y):
+        if x >= self.position_x and x <= self.position_x + self.side:
+            if y >= self.position_y and y <= self.position_y + self.side:
+                return True
+        return False
